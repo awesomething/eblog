@@ -1,1 +1,1 @@
-# Next Blog GPT
+# Auto Blog

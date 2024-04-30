@@ -6,7 +6,7 @@ export const getAppProps = async (ctx) => {
   const client = await clientPromise;
   const db = client.db('gigApi');
   const user = await db.collection('user').findOne({
-    auth0Id: userSession.user.sub,
+    auth0id: userSession.user.sub,
   });
 
   if (!user) {
