@@ -1,5 +1,8 @@
 import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
-import { AppLayout } from "../../components/AppLayout";
+import { useRouter } from 'next/router';
+import { useContext, useState } from 'react';
+import { AppLayout } from '../../components/AppLayout';
+import PostsContext from '../../context/postsContext';
 import clientPromise from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
 import Markdown from "react-markdown";
@@ -8,12 +11,33 @@ import { faHashtag } from "@fortawesome/free-solid-svg-icons";
 import { getAppProps } from "../../utils/getAppProps";
 
 export default function Post(props) {
-  console.log("PROPS: ", props)
+  console.log('PROPS: ', props);
+  const router = useRouter();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { deletePost } = useContext(PostsContext);
+  
+  const handleDeleteConfirm = async () => {
+    try {
+      const response = await fetch(`/api/deletePost`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ postId: props.id }),
+      });
+      const json = await response.json();
+      if (json.success) {
+        deletePost(props.id);
+        router.replace(`/post/new`);
+      }
+    } catch (e) {}
+  };
+
     return (
     <div className="overflow-auto h-full">
       <div className="max-w-screen-sm mx-auto">
       <div className="text-sm font-bold mt-6 p-2 bg-stone-200 rounded-sm">
-          SEO title and meta description
+          SEO title and description
         </div>
         <div className="p-4 my-2 border border-stone-200 rounded-md">
           <div className="text-blue-600 text-2xl font-bold">{props.title}</div>
@@ -35,6 +59,38 @@ export default function Post(props) {
       <Markdown>
         {props.postContent || ""}
       </Markdown>
+      <div className="my-4">
+          {!showDeleteConfirm && (
+            <button
+              className="btn bg-red-600 hover:bg-red-700"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete post
+            </button>
+          )}
+          {!!showDeleteConfirm && (
+            <div>
+              <p className="p-2 bg-red-300 text-center">
+                Are you sure you want to delete this post? This action is
+                irreversible
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="btn bg-stone-600 hover:bg-stone-700"
+                >
+                  cancel
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="btn bg-red-600 hover:bg-red-700"
+                >
+                  confirm delete
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
       );
@@ -44,16 +100,19 @@ export default function Post(props) {
     return <AppLayout {...pageProps}>{page}</AppLayout>
   }
 
-  export const getServerSideProps = withPageAuthRequired ( {
-    async getServerSideProps(ctx){
-      const props = await getAppProps(ctx);
-      const userSession = await getSession(ctx.req, ctx.res);
+  // With the withPageAuthRequired higher-order function, we can require authentication to access the exact page.
+// If the user is not authenticated, they are redirected to the login page.
+export const getServerSideProps = withPageAuthRequired({
+  async getServerSideProps(ctx) {
+    const props = await getAppProps(ctx);
+    // Grab the currently logged in users ID from Auth0.
+    const userSession = await getSession(ctx.req, ctx.res);
       const client = await clientPromise;
       const db = client.db("gigApi")
       const user = await db.collection("user").findOne({
-        auth0Id: userSession.user.sub
+        auth0id: userSession.user.sub
       });
-      const post = await db.collection("post").findOne({
+      const post = await db.collection("posts").findOne({
         _id: new ObjectId(ctx.params.postId),
         userId: user._id
       })
