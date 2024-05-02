@@ -29,7 +29,6 @@ export default function NewPost(props) {
       const json = await response.json();
       // console.log(json.post.postContent);
       // setPostContent(json.postContent);
-      console.log('RESULT: ', json);
       if (json?.postId) {
         router.push(`/post/${json.postId}`);
       }

@@ -10,7 +10,6 @@ export default function TokenTopup() {
       method: 'POST'
     })
     const json = await result.json()
-    console.log("RESULT: ", json)
     window.location.href = json.session.url;
   }
     return (
@@ -19,7 +18,7 @@ export default function TokenTopup() {
         <p className="pb-2">Get tokens to create new posts</p>
         <button className="btn" onClick={handleClick}>
           <FontAwesomeIcon icon={faCoins} />
-          &nbsp;&nbsp; Add tokens
+          &nbsp;&nbsp; Add token
         </button>
       </div>
     </div>
