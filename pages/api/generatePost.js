@@ -25,8 +25,6 @@ export default withApiAuthRequired(async function handler(req, res) {
   
     const { topic, keywords } = req.body;
   
-    // console.log("req.body:", req.body);
-  
     // Validation
     if (!topic || !keywords) {
       res.status(422);

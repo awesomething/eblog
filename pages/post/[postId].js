@@ -11,7 +11,6 @@ import { faHashtag } from "@fortawesome/free-solid-svg-icons";
 import { getAppProps } from "../../utils/getAppProps";
 
 export default function Post(props) {
-  console.log('PROPS: ', props);
   const router = useRouter();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { deletePost } = useContext(PostsContext);

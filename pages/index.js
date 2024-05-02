@@ -7,7 +7,6 @@ import { Logo } from '../components/Logo';
 
 export default function Home() {
   // const {user} = useUser();
-  // console.log('first', user)
   return (
   <div className="w-screen h-screen overflow-hidden flex justify-center items-start relative">
       <Image src="https://aarp-content.brightspotcdn.com/dims4/default/ec15888/2147483647/strip/true/crop/1279x704+0+0/resize/876x482!/format/webp/quality/90/?url=http%3A%2F%2Faarp-brightspot.s3.amazonaws.com%2Fcontent%2F9a%2Faa%2F12dbbe904ebc9b666d31ef7a7ec6%2Fkeytohappiness-by-elizabeth-brockway-1280x704.gif" alt="Hero" fill className="absolute" />
